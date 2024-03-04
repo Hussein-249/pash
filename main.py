@@ -1,7 +1,9 @@
 import os
+import glob
 import sys
 from ls import ls
 from pwd import pwd
+from cd import cd
 
 import subprocess
 
@@ -18,9 +20,7 @@ def main():
 
     # internal_binaries = set("ls", "pwd") # does not work bc creates set from letters!
 
-    # print(internal_binaries)
-
-    internal_binaries = {'ls', 'pwd'}
+    internal_binaries = {'ls': ls, 'pwd': pwd, 'cd': cd}
 
     print(internal_binaries)
 
@@ -29,15 +29,13 @@ def main():
     return
 
 
-def prompt_loop(user: str, intern: set):
-
+def prompt_loop(user: str, intern: dict):
     prompt = user + " $ "
-    prompt_flag = True
-    while prompt_flag:
+
+    while 1:
         userinput = input(prompt)
         # print(userinput)
         if userinput == "exit":
-            prompt_flag = False
             break
 
         else:
@@ -45,14 +43,14 @@ def prompt_loop(user: str, intern: set):
 
             if internal_check[0]:
                 # print(userinput)
-                execute_internal(userinput)
+                execute_internal(userinput, intern)
                 continue
             else:
                 # print(internal_check[1])
                 search_external(userinput)
 
 
-def search_internal(cmd: str, internal_binaries: set) -> tuple:
+def search_internal(cmd: str, internal_binaries: dict) -> tuple:
 
     if cmd in internal_binaries:
         res = tuple((True, cmd))
@@ -63,18 +61,13 @@ def search_internal(cmd: str, internal_binaries: set) -> tuple:
 
 
 def search_external(cmd: str):
-
-    exe = set()
-    py = set()
-
     path = pwd()
 
     files = os.listdir(path)
 
-    print(ls)
+    temp = glob.glob(os.path.join(path, '*.py'))
 
-    # for file in files:
-    #     print(file)
+    # print(temp)
 
     for file in files:
         parts = file.split('.')
@@ -82,21 +75,20 @@ def search_external(cmd: str):
         name = parts[0]
 
         if name == cmd:
-
             ext = parts[-1]
 
             if ext == 'py':
-                py.add(file)
                 print(f'Found py')
 
                 script_path = os.path.join(path, file)
 
                 subprocess.run((['python', script_path]))
                 return
+
             elif ext == 'exe':
-                exe.add(file)
                 print(f'Found exe')
                 return
+
         else:
             continue
 
@@ -104,32 +96,22 @@ def search_external(cmd: str):
 
     return
 
-    # if cmd in internal_binaries:
-    #
-    #     res = tuple((True, cmd))
-    #     return res
-    # else:
-    #     res = tuple((False, "Unable to find executable as internal or external command file"))
-    #     return res
 
+def execute_internal(cmd: str, internal_binaries: dict):
+    try:
+        if cmd in internal_binaries:
+            internal_binaries[cmd]()
 
-def execute_internal(cmd: str):
+        else:
+            print("")
 
-    if cmd == "ls":
-        # print("Executing " + cmd)
-        ls()
+        return
 
-    if cmd == "pwd":
-        # print("Executing " + cmd)
-        res = pwd()
-        print(res)
+    except Exception as e:
+        print(f'Exception occurred during internal execution: {e}')
 
-    else:
-        print("")
-
-    return
+        return
 
 
 if __name__ == '__main__':
     main()
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

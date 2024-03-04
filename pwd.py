@@ -4,6 +4,8 @@ import os
 def pwd():
     try:
         cwd = os.path.abspath('.')
+
+        print(cwd)
         return cwd
 
     except Exception as e:
