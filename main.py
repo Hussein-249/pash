@@ -1,3 +1,4 @@
+import inspect
 import os
 import glob
 import sys
@@ -5,8 +6,11 @@ from ls import ls
 from internal.c_pwd import c_pwd
 from internal.cd import cd
 from internal.htop import htop
+from internal.sysinfo import sysinfo
 
 import subprocess
+
+# import curses
 
 arguments = sys.argv
 
@@ -18,15 +22,9 @@ arguments = sys.argv
 
 def main():
     user = os.getlogin()
-
     # internal_binaries = set("ls", "pwd") # does not work bc creates set from letters!
-
-    internal_binaries = {'ls': ls, 'pwd': c_pwd, 'cd': cd, 'htop': htop}
-
-    print(internal_binaries)
-
+    internal_binaries = {'ls': ls, 'pwd': c_pwd, 'cd': cd, 'htop': htop, 'sysinfo': sysinfo}
     prompt_loop(user, internal_binaries)
-
     return
 
 
@@ -43,11 +41,9 @@ def prompt_loop(user: str, intern: dict):
             internal_check = search_internal(userinput, intern)
 
             if internal_check[0]:
-                # print(userinput)
                 execute_internal(userinput, intern)
                 continue
             else:
-                # print(internal_check[1])
                 search_external(userinput)
 
 
@@ -72,14 +68,12 @@ def search_external(cmd: str):
 
     for file in files:
         parts = file.split('.')
-
         name = parts[0]
-
         if name == cmd:
             ext = parts[-1]
 
             if ext == 'py':
-                print(f'Found py')
+                # print(f'Found py')
 
                 script_path = os.path.join(path, file)
 
@@ -88,6 +82,8 @@ def search_external(cmd: str):
 
             elif ext == 'exe':
                 print(f'Found exe')
+                exe_path = os.path.join(path, file)
+                subprocess.run([exe_path])
                 return
 
         else:
@@ -101,11 +97,13 @@ def search_external(cmd: str):
 def execute_internal(cmd: str, internal_binaries: dict):
     # NOTICE THAT THIS ONLY WORKS WITH FUNCTIONS TAKING NO ARGUMENTS
     # HOWEVER CD AND OTHERS TAKE ARGUMENTS
-    # need to import inspect
-    # also args = inspect.getfullargspec(function_to_execute).args
+
     try:
         if cmd in internal_binaries:
-            internal_binaries[cmd]()
+            f = internal_binaries[cmd]
+            # args = inspect.getfullargspec(f).args
+            # print(args)
+            f()
 
         else:
             print("Command not found in internal bins")
@@ -114,7 +112,6 @@ def execute_internal(cmd: str, internal_binaries: dict):
 
     except Exception as e:
         print(f'Exception occurred during internal execution: {e}')
-
         return
 
 
