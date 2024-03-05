@@ -1,9 +1,9 @@
 import os
 
 
-def pwd():
+def c_pwd():
     try:
-        cwd = os.path.abspath('.')
+        cwd = os.path.abspath('')
 
         print(cwd)
         return cwd

@@ -1,11 +1,17 @@
 import os
-from pwd import pwd
+from internal.c_pwd import c_pwd
 
 
 def ls():
-    path = pwd()
+    path = c_pwd()
 
-    files = os.listdir(path)
+    print(path)
+
+    os.chdir(path)
+
+    files = os.listdir()
+
+    print(files)
 
     # print(ls)
 

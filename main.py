@@ -2,8 +2,9 @@ import os
 import glob
 import sys
 from ls import ls
-from pwd import pwd
-from cd import cd
+from internal.c_pwd import c_pwd
+from internal.cd import cd
+from internal.htop import htop
 
 import subprocess
 
@@ -20,7 +21,7 @@ def main():
 
     # internal_binaries = set("ls", "pwd") # does not work bc creates set from letters!
 
-    internal_binaries = {'ls': ls, 'pwd': pwd, 'cd': cd}
+    internal_binaries = {'ls': ls, 'pwd': c_pwd, 'cd': cd, 'htop': htop}
 
     print(internal_binaries)
 
@@ -61,11 +62,11 @@ def search_internal(cmd: str, internal_binaries: dict) -> tuple:
 
 
 def search_external(cmd: str):
-    path = pwd()
+    path = c_pwd()
 
     files = os.listdir(path)
 
-    temp = glob.glob(os.path.join(path, '*.py'))
+    temp = glob.glob(os.path.join(path, '*.py')) # for later
 
     # print(temp)
 
@@ -98,12 +99,16 @@ def search_external(cmd: str):
 
 
 def execute_internal(cmd: str, internal_binaries: dict):
+    # NOTICE THAT THIS ONLY WORKS WITH FUNCTIONS TAKING NO ARGUMENTS
+    # HOWEVER CD AND OTHERS TAKE ARGUMENTS
+    # need to import inspect
+    # also args = inspect.getfullargspec(function_to_execute).args
     try:
         if cmd in internal_binaries:
             internal_binaries[cmd]()
 
         else:
-            print("")
+            print("Command not found in internal bins")
 
         return
 
