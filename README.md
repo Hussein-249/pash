@@ -1,11 +1,12 @@
 # Pash-Shell
-![](https://img.shields.io/badge/Development_Ongoing-blue)
+![](https://img.shields.io/badge/Development-Ongoing-blue)
 ![](https://img.shields.io/badge/Beginner_friendly-blue)
 
 > A customizable, interactive bash-like shell written in Python
 
 # Description
 Developers use shells to complete basic, everyday tasks. This project is a simple shell written in python to provide easy extensibility. Beginner computer science students should be able to read this code and understand how a shell might work.
+[Jump to documentation](#documentation)
 
 # Purpose
 
@@ -27,10 +28,16 @@ It involves heavy use of the ```os```, ```sys```, and ```subprocess``` libraries
 - sysinfo
 - Executing external python scripts and executables in the same directory
 
+Most features still need to be polished, and it lacks a debug mode.
+
 # Commands / Operations in progress
 - cd
 - htop
-- accepting arguments
+- mkdir
+- accepting arguments/options for all implemented internal commands (-l, -o, etc.)
 - debug mode
 - logging
 
+# Documentation
+<a id="documentation"></a>
+To be written once a fully-working model is released.
