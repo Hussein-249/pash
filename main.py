@@ -1,16 +1,17 @@
-import inspect
+# To view the list of available internal commands, view the internal_binaries data structure
+
+# import inspect
+# import glob
+# import curses
 import os
-import glob
 import sys
+import subprocess
 from ls import ls
 from internal.c_pwd import c_pwd
 from internal.cd import cd
 from internal.htop import htop
 from internal.sysinfo import sysinfo
 
-import subprocess
-
-# import curses
 
 arguments = sys.argv
 
@@ -38,32 +39,21 @@ def prompt_loop(user: str, intern: dict):
             break
 
         else:
-            internal_check = search_internal(userinput, intern)
+            args = parse_args(userinput)
+            internal_check = search_internal(args[0], intern)
 
-            if internal_check[0]:
-                execute_internal(userinput, intern)
-                continue
-            else:
-                search_external(userinput)
+            execute_internal(args, intern) if internal_check else search_external(args[0])
 
 
-def search_internal(cmd: str, internal_binaries: dict) -> tuple:
-
-    if cmd in internal_binaries:
-        res = tuple((True, cmd))
-        return res
-    else:
-        res = tuple((False, "Unable to find internal executable."))
-        return res
+def search_internal(cmd: str, internal_binaries: dict) -> bool:
+    return cmd in internal_binaries
 
 
 def search_external(cmd: str):
     path = c_pwd()
-
     files = os.listdir(path)
 
-    temp = glob.glob(os.path.join(path, '*.py')) # for later
-
+    # temp = glob.glob(os.path.join(path, '*.py'))
     # print(temp)
 
     for file in files:
@@ -73,15 +63,12 @@ def search_external(cmd: str):
             ext = parts[-1]
 
             if ext == 'py':
-                # print(f'Found py')
-
                 script_path = os.path.join(path, file)
 
                 subprocess.run((['python', script_path]))
                 return
 
             elif ext == 'exe':
-                print(f'Found exe')
                 exe_path = os.path.join(path, file)
                 subprocess.run([exe_path])
                 return
@@ -94,16 +81,17 @@ def search_external(cmd: str):
     return
 
 
-def execute_internal(cmd: str, internal_binaries: dict):
+def execute_internal(args: list, internal_binaries: dict):
     # NOTICE THAT THIS ONLY WORKS WITH FUNCTIONS TAKING NO ARGUMENTS
     # HOWEVER CD AND OTHERS TAKE ARGUMENTS
 
     try:
+        cmd = args[0]
         if cmd in internal_binaries:
             f = internal_binaries[cmd]
             # args = inspect.getfullargspec(f).args
             # print(args)
-            f()
+            f(args[1:])
 
         else:
             print("Command not found in internal bins")
@@ -113,6 +101,25 @@ def execute_internal(cmd: str, internal_binaries: dict):
     except Exception as e:
         print(f'Exception occurred during internal execution: {e}')
         return
+
+
+def parse_args(userinput):
+    index = 1
+    args = userinput.split(' ')
+    options = []
+
+    for arg in args:
+        if arg[0] == '-':
+            options.append(arg[1:])
+            index += 1
+
+    files = []
+
+    for i in range(index, len(args)):
+        files.append(args[i])
+
+    parsed = [args[0], options, files]
+    return parsed
 
 
 if __name__ == '__main__':
