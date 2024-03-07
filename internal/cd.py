@@ -1,7 +1,7 @@
 from os.path import abspath
 
 
-def cd():
+def cd(args=None):
     path = abspath('..')
 
     print(f'Now doing cd')

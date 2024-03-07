@@ -6,6 +6,8 @@
 import os
 import sys
 import subprocess
+import multiprocessing
+import shlex
 from ls import ls
 from internal.c_pwd import c_pwd
 from internal.cd import cd
@@ -82,16 +84,23 @@ def search_external(cmd: str):
 
 
 def execute_internal(args: list, internal_binaries: dict):
-    # NOTICE THAT THIS ONLY WORKS WITH FUNCTIONS TAKING NO ARGUMENTS
-    # HOWEVER CD AND OTHERS TAKE ARGUMENTS
-
     try:
         cmd = args[0]
         if cmd in internal_binaries:
             f = internal_binaries[cmd]
             # args = inspect.getfullargspec(f).args
             # print(args)
-            f(args[1:])
+
+            only_args = args[1:]
+
+            # if '&' in only_args[-1]:
+            #     print(f'Found & character, running background')
+            #
+            #     subprocess.Popen([cmd] + only_args, capture_output=True, text=True)
+            # else:
+            #     f(only_args)
+
+            f(only_args)
 
         else:
             print("Command not found in internal bins")
@@ -119,6 +128,8 @@ def parse_args(userinput):
         files.append(args[i])
 
     parsed = [args[0], options, files]
+
+    # print(parsed)
     return parsed
 
 

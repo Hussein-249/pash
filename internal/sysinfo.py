@@ -2,7 +2,7 @@ import platform
 import multiprocessing
 
 
-def sysinfo():
+def sysinfo(args=None):
     system_info = {
         'System': platform.system(),
         'Processor': platform.processor(),

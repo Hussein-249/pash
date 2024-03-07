@@ -1,7 +1,7 @@
 import os
 
 
-def c_pwd():
+def c_pwd(args=None):
     try:
         cwd = os.path.abspath('')
 

@@ -2,7 +2,8 @@ import os
 import sys
 # import psutil
 
-def htop():
+
+def htop(args=None):
     try:
         # if name == win
         cores = os.cpu_count()
